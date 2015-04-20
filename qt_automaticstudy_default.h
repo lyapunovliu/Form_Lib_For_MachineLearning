@@ -23,6 +23,8 @@ public:
     int defaultStudyNum;
     int current_index_Readylist;
     int current_index_StudyList;
+    void PR_Processsing();
+    void PR_ready_data(std::vector<QString>,std::vector<int>);
 
 private slots:
     void on_action_exit_triggered();
@@ -40,6 +42,10 @@ private slots:
     void on_pushButton_leftmove_clicked();
 
     void on_pushButton_PathSelect_clicked();
+
+    void on_action_SaveModel_triggered();
+
+    void on_pushButton_study_clicked();
 
 private:
     Ui::Qt_AutomaticStudy_Default *ui;
