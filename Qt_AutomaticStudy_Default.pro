@@ -13,8 +13,11 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        qt_automaticstudy_default.cpp
+        qt_automaticstudy_default.cpp \
+    character_select_dlg.cpp
 
-HEADERS  += qt_automaticstudy_default.h
+HEADERS  += qt_automaticstudy_default.h \
+    character_select_dlg.h
 
-FORMS    += qt_automaticstudy_default.ui
+FORMS    += qt_automaticstudy_default.ui \
+    character_select_dlg.ui

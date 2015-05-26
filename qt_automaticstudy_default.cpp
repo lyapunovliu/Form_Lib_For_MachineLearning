@@ -1,7 +1,8 @@
 #include "qt_automaticstudy_default.h"
 #include "ui_qt_automaticstudy_default.h"
 #include <QFileDialog>
-
+#include <fstream>
+using namespace std;
 Qt_AutomaticStudy_Default::Qt_AutomaticStudy_Default(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::Qt_AutomaticStudy_Default)
@@ -115,8 +116,24 @@ void Qt_AutomaticStudy_Default::on_pushButton_PathSelect_clicked()
 
 }
 
+//学习文件保存
 void Qt_AutomaticStudy_Default::on_action_SaveModel_triggered()
 {
+    ofstream outFile;
+    outFile.open("D:\\my_study_model.txt",ofstream::out);
+    outFile<<"class_name\t "<<"class_ID\t "<<"class path"<<endl;
+    for(int i=0;i<defaultStudyNum;i++)
+    {
+        QString quexian_name=ui->tableView_QueXianForStudy_List->model()->data(ui->tableView_QueXianForStudy_List->model()->index(i,0)).toString();
+        QString quexian_name_index=ui->tableView_QueXianForStudy_List->model()->data(ui->tableView_QueXianForStudy_List->model()->index(i,1)).toString();
+        QString quexian_path=ui->tableView_QueXianForStudy_List->model()->data(ui->tableView_QueXianForStudy_List->model()->index(i,2)).toString();
+        outFile<<quexian_name.toStdString()<<"\t"<<quexian_name_index.toStdString()<<"\t"<<quexian_path.toStdString()<<endl;
+
+
+    }
+    outFile.close();
+
+
 
 }
 
@@ -164,5 +181,37 @@ void Qt_AutomaticStudy_Default::PR_Processsing()
 
 void Qt_AutomaticStudy_Default::PR_ready_data(std::vector<QString>,std::vector<int>)
 {
+
+}
+
+void Qt_AutomaticStudy_Default::on_action_OpenModel_triggered()
+{
+    QString openfileName=QFileDialog::getOpenFileName(this);
+    ifstream f_read(openfileName.toStdString().c_str());
+    char buffer[256];
+    f_read.getline(buffer,256,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束
+
+    while(!f_read.eof())
+    {
+       f_read.getline(buffer,256,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束
+//       cout<<buffer<<endl;
+       QString qline(buffer);
+       QStringList strlist =qline.split('\t');
+       if(strlist.count()<3)
+           break;
+
+       QString quexian_name=strlist.at(0);
+       QString quexian_name_index=strlist.at(1);
+       QString quexian_path=strlist.at(2);
+
+       quexianForStudy_model->setItem(defaultStudyNum, 0, new QStandardItem(quexian_name));
+       quexianForStudy_model->setItem(defaultStudyNum, 1, new QStandardItem(quexian_name_index));
+       quexianForStudy_model->setItem(defaultStudyNum, 2, new QStandardItem(quexian_path));
+
+       defaultStudyNum++;
+
+       int i=0;
+    }
+
 
 }

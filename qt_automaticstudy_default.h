@@ -47,6 +47,8 @@ private slots:
 
     void on_pushButton_study_clicked();
 
+    void on_action_OpenModel_triggered();
+
 private:
     Ui::Qt_AutomaticStudy_Default *ui;
 };

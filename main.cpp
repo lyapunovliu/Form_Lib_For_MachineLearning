@@ -9,10 +9,11 @@ int main(int argc, char *argv[])
     // 以下部分解决中文乱码
     QTextCodec *codec = QTextCodec::codecForName("UTF-8");
 
-    QTextCodec::setCodecForTr(codec);
+    QTextCodec::setCodecForLocale(codec);
+//            ::set:setCodecForTr(codec);
 
     QTextCodec::setCodecForLocale(QTextCodec::codecForLocale());
-    QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
+//    QTextCodec::setCodecForCStrings(QTextCodec::codecForLocale());
     Qt_AutomaticStudy_Default w;
     w.show();
 
