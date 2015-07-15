@@ -21,3 +21,27 @@ HEADERS  += qt_automaticstudy_default.h \
 
 FORMS    += qt_automaticstudy_default.ui \
     character_select_dlg.ui
+INCLUDEPATH += D:/soft/software/opencv/opencv/build/include
+INCLUDEPATH += D:/soft/software/opencv/opencv/build/include/opencv
+INCLUDEPATH += D:/soft/software/opencv/opencv/build/include/opencv2
+CONFIG(debug, debug|release) {
+LIBS += -LD:\soft\software\opencv\opencv\build\x86\vc11\lib \
+-lopencv_core246d \
+-lopencv_highgui246d \
+-lopencv_imgproc246d \
+-lopencv_features2d246d \
+-lopencv_calib3d246d \
+-lopencv_video246d \
+-lopencv_ml246d \
+
+}
+else {
+LIBS += -LD:\soft\software\opencv\opencv\build\x86\vc11\lib \
+-lopencv_core246 \
+-lopencv_highgui246 \
+-lopencv_imgproc246 \
+-lopencv_features2d246 \
+-lopencv_calib3d246 \
+-lopencv_video246 \
+-lopencv_ml246 \
+}
