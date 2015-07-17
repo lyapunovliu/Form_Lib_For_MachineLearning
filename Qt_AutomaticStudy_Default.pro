@@ -14,10 +14,13 @@ TEMPLATE = app
 
 SOURCES += main.cpp\
         qt_automaticstudy_default.cpp \
-    character_select_dlg.cpp
+    character_select_dlg.cpp \
+    my_algorithm.cpp
 
 HEADERS  += qt_automaticstudy_default.h \
-    character_select_dlg.h
+    character_select_dlg.h \
+    my_algorithm.h \
+    Characters_Strip_Contour.h
 
 FORMS    += qt_automaticstudy_default.ui \
     character_select_dlg.ui

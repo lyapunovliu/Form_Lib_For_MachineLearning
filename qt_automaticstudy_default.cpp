@@ -144,41 +144,17 @@ void Qt_AutomaticStudy_Default::on_pushButton_study_clicked()
 {
     PR_Processsing();
 
+    int cols=GetFile_Cols("D:\\characters_quexian.txt");
+    int rows=GetFile_Rows("D:\\characters_quexian.txt");
+    int i=0;
+
 }
 void Qt_AutomaticStudy_Default::PR_Processsing()
 {
     std::vector<QString> data_list;
     std::vector<int> data_label;
     PR_ready_data(data_list,data_label);
-//    PR_Characters compute_result1;
-//    init_Character(compute_result1);
-//    cv::Mat vector_mat_whole=cv::Mat::zeros(data_list.size(),74,CV_32FC1);
-//    cv::Mat vector_mat=vector_mat_whole.colRange(0,73);
-//    cv::Mat vector_label=vector_mat_whole.col(73);
 
-//    for(int i=0;i<data_list.size();i++)
-//    {
-//        QString str=data_list[i];
-//        cv::Mat img_mat=cv::imread(str.toStdString().c_str());
-//        computer_PR_character1(img_mat,characters_flag,compute_result1,data_label[i]);
-//        vector_to_Mat(compute_result1,vector_mat.row(i));
-//        vector_label.at<float>(i,0)=(float)data_label[i];
-//    }
-//    write_to_csv(vector_mat_whole);
-//    cv::FileStorage fs("D:\\test.yml", FileStorage::WRITE);
-//    fs<<"mat"<<vector_mat;
-//    fs.release();
-
-//    if(ui->comboBox_LearningMethod->currentText()=="SVM")
-//        compute_SVM_withNormalize(vector_mat,vector_label);
-//    if(ui->comboBox_LearningMethod->currentText()=="DT")
-//        compute_DecisionTree_withNormalize(vector_mat,vector_label);
-//    if(ui->comboBox_LearningMethod->currentText()=="RT")
-//        compute_RandomForest_withNormalize(vector_mat,vector_label);
-//    if(ui->comboBox_LearningMethod->currentText()=="Boost")
-//        compute_Boost_withNormalize(vector_mat,vector_label);
-//    if(ui->comboBox_LearningMethod->currentText()=="ANN")
-//        compute_ANN_withNormalize(vector_mat,vector_label);
 
 }
 
@@ -193,8 +169,15 @@ void Qt_AutomaticStudy_Default::PR_ready_data(std::vector<QString>,std::vector<i
         QString quexian_name=ui->tableView_QueXianForStudy_List->model()->data(ui->tableView_QueXianForStudy_List->model()->index(i,0)).toString();
         QString quexian_name_index=ui->tableView_QueXianForStudy_List->model()->data(ui->tableView_QueXianForStudy_List->model()->index(i,1)).toString();
         QString quexian_path=ui->tableView_QueXianForStudy_List->model()->data(ui->tableView_QueXianForStudy_List->model()->index(i,2)).toString();
-        quexian_pathList.append(quexian_path);
-        quexian_pathlabelList.append(quexian_name_index);
+        if(quexian_name.isEmpty())
+        {
+
+        }
+        else
+        {
+            quexian_pathList.append(quexian_path);
+            quexian_pathlabelList.append(quexian_name_index);
+        }
     }
 
 
@@ -228,21 +211,23 @@ void Qt_AutomaticStudy_Default::PR_ready_data(std::vector<QString>,std::vector<i
 
     ofstream outFile;
     outFile.open("D:\\characters_quexian.txt",ofstream::out);
-//    ofstream labeloutFile;
-//    outFile.open("D:\\charactersLabel_quexian.txt",ofstream::out);
 
-//    labeloutFile<<"label"<<"\n";
     for(int j=0;j<quexian_charactersList.count();j++)
     {
+
         int dim=getDimesionOfGivenCharacter(quexian_charactersList.at(j));
         if (dim>1)
         {
             for(int k=0;k<dim;k++)
                 outFile<<quexian_charactersList.at(j).toStdString()<<"_"<<k<<"\t";
         }
-        else
+        else if(dim==1)
         {
             outFile<<quexian_charactersList.at(j).toStdString()<<"\t";
+
+        }
+        else
+        {
 
         }
     }
@@ -258,11 +243,13 @@ void Qt_AutomaticStudy_Default::PR_ready_data(std::vector<QString>,std::vector<i
     {
 //        labeloutFile<<quexian_filelabelList.at(i).toStdString()<<"\n";
         //特征循环
+        //读入文件到变量
+        src=cv::imread(quexian_fileList.at(i).toStdString().c_str());
+        mask=src.clone();
+        mask=cv::Scalar(255);
         for(int j=0;j<quexian_charactersList.count();j++)
         {
-            //读入文件到变量
-            src=cv::imread(quexian_fileList.at(i).toStdString().c_str());
-            mask=src.clone();
+
             float *ptr_characers;
             ptr_characers=quexian_characters;
             //得到对应特征的浮点数值
@@ -272,7 +259,11 @@ void Qt_AutomaticStudy_Default::PR_ready_data(std::vector<QString>,std::vector<i
             {
                 //特征元素输入
                 for(int k=0;k<dim;k++)
-                    outFile<<1.01*i<<"\t";
+                {
+                    outFile<<*(ptr_characers+k)<<"\t";
+                    float temp_a=*(ptr_characers+k);
+                    int kk=0;
+                }
             }
             else
             {
@@ -283,13 +274,26 @@ void Qt_AutomaticStudy_Default::PR_ready_data(std::vector<QString>,std::vector<i
             }
         }
         outFile<<"\n";
+//        labeloutFile<<quexian_filelabelList.at(i)<<"\n";
 
     }
 
 
     //根据文件进行特征计算,写入文件 第三：结束文件
     outFile.close();
-//    labeloutFile.close();
+
+    //标签文件
+    ofstream labeloutFile;
+    labeloutFile.open("D:\\quexian_Label.txt",ofstream::out);
+    labeloutFile<<"label"<<"\n";
+    for(int i=0;i<quexian_fileList.count();i++)
+    {
+        labeloutFile<<quexian_filelabelList.at(i).toStdString()<<"\n";
+    }
+
+
+    labeloutFile.close();
+
 
 
     //特征归一化
@@ -414,6 +418,8 @@ int Qt_AutomaticStudy_Default::getDimesionOfGivenCharacter(QString name)
 }
 void Qt_AutomaticStudy_Default::getCharacter(cv::Mat src,cv::Mat mask,float* ptr_dst,QString name)
 {
+
+
     if (name.compare("length")==0)
     {
         *ptr_dst=2.0*(src.cols+src.rows);
@@ -497,6 +503,56 @@ void Qt_AutomaticStudy_Default::getCharacter(cv::Mat src,cv::Mat mask,float* ptr
 }
 void Qt_AutomaticStudy_Default::computer_LBP59(cv::Mat src, cv::Mat mask, float* ptr_dst)
 {
+    //src mask is grey image,ptr is the ptr of 59 histogram of lbp image
+
+    //LBP变量开始
+
+    cv::Mat img_mat=src;
+    cv::Mat img_lbp=200*cv::Mat::ones(img_mat.rows,img_mat.cols,CV_8UC1);
+
+    int a[9];
+    //转换LBP图像
+    my_algorithm_app.Mat_com_M1_3Mat(a, mask,src,img_lbp);
+    cv::imshow("lbp img",img_lbp);
+    cv::waitKey(1000);
+
+
+    //调用LBP数组
+    if(my_algorithm_app.set_hist_LBP_Map_Table()==1)
+    {
+
+    }
+    else
+    {
+        std::printf("warning", "The file D:\\Qt_CisdiCV_Setting\\LBP_Map.txt does not exist.");
+    }
+    int array_LBP_Map[59];
+    int j=0;
+    while(j<59)
+    {
+        array_LBP_Map[j]=0;
+        j++;
+    }
+    double array_LBP_Map_Normalize[59];
+    cv::Mat array_LBP_Map_mat(59,1,CV_32F);
+
+    int hist_array[256];
+
+    //计算LBP
+    my_algorithm_app.getHistogram(hist_array,mask,img_lbp);
+
+    my_algorithm_app.LBP_256_259(hist_array,array_LBP_Map,my_algorithm_app.hist_LBP_Map_Table);
+
+    //归一化计算
+    my_algorithm_app.my_normalize(array_LBP_Map,array_LBP_Map_Normalize,59);
+    //进行结构体赋值
+    for(int k=0;k<59;k++)
+    {
+
+//        computer_result.LBP[k]=array_LBP_Map_Normalize[k];
+        *(ptr_dst+k)=array_LBP_Map_Normalize[k];
+    }
+
 
 }
 void Qt_AutomaticStudy_Default::computer_SURF(cv::Mat src, cv::Mat mask, float* ptr_dst)
@@ -506,16 +562,86 @@ void Qt_AutomaticStudy_Default::computer_SURF(cv::Mat src, cv::Mat mask, float* 
 
 void Qt_AutomaticStudy_Default::computer_AvgGreyValue(cv::Mat src, cv::Mat mask, float* ptr_dst)
 {
+    int cols=src.cols;
+    int rows=src.rows;
+    int sum_grey=0;
+    int mask_ele_number=0;
+
+    for(int i=0;i<rows;i++)
+    {
+        for(int j=0;j<cols;j++)
+        {
+            if(mask.at<uchar>(i,j)==255)
+            {
+                sum_grey=sum_grey+(int)src.at<uchar>(i,j);
+                mask_ele_number++;
+            }
+
+        }
+
+    }
+    if(mask_ele_number==0)
+        *ptr_dst=0;
+    else
+        *ptr_dst=1.0*sum_grey/mask_ele_number;
+    return;
 
 }
 
 void Qt_AutomaticStudy_Default::computer_MinGreyValue(cv::Mat src, cv::Mat mask, float* ptr_dst)
 {
+    int cols=src.cols;
+    int rows=src.rows;
+    int sum_grey=0;
+    int min_ele=0;
+
+
+    for(int i=0;i<rows;i++)
+    {
+        for(int j=0;j<cols;j++)
+        {
+            if(mask.at<uchar>(i,j)==255)
+            {
+                if(min_ele>(int)src.at<uchar>(i,j))
+                    min_ele=(int)src.at<uchar>(i,j);
+
+            }
+
+        }
+
+    }
+
+    *ptr_dst=1.0*min_ele;
+    return;
 
 }
 
 void Qt_AutomaticStudy_Default::computer_MaxGreyValue(cv::Mat src, cv::Mat mask, float* ptr_dst)
 {
+    int cols=src.cols;
+    int rows=src.rows;
+    int sum_grey=0;
+    int max_ele=0;
+
+
+    for(int i=0;i<rows;i++)
+    {
+        for(int j=0;j<cols;j++)
+        {
+            if(mask.at<uchar>(i,j)==255)
+            {
+                if(max_ele<(int)src.at<uchar>(i,j))
+                    max_ele=(int)src.at<uchar>(i,j);
+
+            }
+
+        }
+
+    }
+
+    *ptr_dst=1.0*max_ele;
+    return;
+
 
 }
 void Qt_AutomaticStudy_Default::computer_SIFT(cv::Mat src, cv::Mat mask, float* ptr_dst)
@@ -536,5 +662,41 @@ void Qt_AutomaticStudy_Default::computer_ORB(cv::Mat src, cv::Mat mask, float* p
 }
 void Qt_AutomaticStudy_Default::computer_HOG(cv::Mat src, cv::Mat mask, float* ptr_dst)
 {
+
+}
+int Qt_AutomaticStudy_Default::GetFile_Rows(std::string txtFileName)
+{
+    ifstream f_read(txtFileName);
+    char buffer[1024];
+    f_read.getline(buffer,1024,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束
+    QString qline(buffer);
+    QStringList strlist =qline.split('\t');
+    int num_rows=1;
+
+
+     while(!f_read.eof())
+     {
+          f_read.getline(buffer,1024,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束
+          num_rows=1+num_rows;
+     }
+    if(num_rows>0)
+        return num_rows;
+    else
+        return 0;
+}
+
+int Qt_AutomaticStudy_Default::GetFile_Cols(std::string txtFileName)
+{
+    ifstream f_read(txtFileName);
+    char buffer[1024];
+    f_read.getline(buffer,1024,'\n');//getline(char *,int,char) 表示该行字符达到256个或遇到换行就结束
+    QString qline(buffer);
+    QStringList strlist =qline.split('\t');
+
+
+    if(strlist.count()>0)
+        return strlist.count();
+    else
+        return 0;
 
 }

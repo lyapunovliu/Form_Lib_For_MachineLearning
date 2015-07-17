@@ -6,6 +6,7 @@
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+#include "my_algorithm.h"
 
 namespace Ui {
 class Qt_AutomaticStudy_Default;
@@ -41,6 +42,8 @@ public:
     void computer_Harris(cv::Mat src,cv::Mat mask,float* ptr_dst);
     void computer_ORB(cv::Mat src,cv::Mat mask,float* ptr_dst);
     void computer_HOG(cv::Mat src,cv::Mat mask,float* ptr_dst);
+    int GetFile_Rows(std::string);
+    int GetFile_Cols(std::string);
 
 private slots:
     void on_action_exit_triggered();
@@ -69,6 +72,7 @@ private slots:
 
 private:
     Ui::Qt_AutomaticStudy_Default *ui;
+    my_algorithm my_algorithm_app;//自定义算法类
 };
 
 #endif // QT_AUTOMATICSTUDY_DEFAULT_H
